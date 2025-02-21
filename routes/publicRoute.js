@@ -14,5 +14,7 @@ router.get('/profile', (req, res) => {
     res.sendFile(publicPath + '/profile.html');
 });
 
-
+router.get('/admin', (req, res) => {
+    res.sendFile(publicPath + '/admin.html');
+});
 export default router;

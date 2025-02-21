@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de admin</title>
+</head>
+
+<body>
+    <h1>Painel de admin</h1>
+    <button id="logout">Logout</button>
+    
+    <h2>Lista de veterinários</h2>
+    <ul id="vets"></ul>
+    <h2>Lista de clientes</h2>
+    <ul id="clients"></ul>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const logout = document.querySelector('#logout');
+        const vets = document.querySelector('#vets');
+        const clients = document.querySelector('#clients');
+
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        logout.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        })
+
+        axios.get('/api/v1/users/', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(({ data }) => {
+                const {msg: users} = data;
+                users.forEach(element => {
+                    const li = document.createElement('li');
+                    li.textContent = element.username; 
+                    if(element.role_id === 3){
+                        const button = document.createElement('button');
+                        button.textContent = 'Mudar para veterinário';
+                        button.addEventListener('click', async () => {
+                            if(confirm('Tem certeza que quer mudar esse usuário para veterinário?')){
+                               try {
+                                    await axios.put(`/api/v1/users/update-role-vet/${element.uid}`, {}, {
+                                        headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }});
+                                   window.location.reload(); 
+                                }catch(error){
+                                    console.log(error);
+                                }
+                            }
+                        });
+                        li.appendChild(button);
+                        clients.appendChild(li);
+
+                    }
+                    else if(element.role_id === 2)
+                        vets.appendChild(li);
+                });
+        }).catch(e => console.log(e));
+    </script>
+
+</body>
+
+</html>

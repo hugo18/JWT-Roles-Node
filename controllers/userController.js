@@ -29,7 +29,7 @@ const register = async (req, res) => {
             }
         );
 
-        return res.status(201).json({ ok: true, msg: token });
+        return res.status(201).json({ ok: true, msg: {token, role_id: newUser.role_id} });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -68,7 +68,7 @@ const login = async (req, res) => {
             }
         );
 
-        return res.json({ ok: true, msg: token });
+        return res.json({ ok: true, msg:{ token, role_id: user.role_id } });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -113,7 +113,7 @@ const updateRoleVet = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
         const updatedUser = await UserModel.updateRoleVet(uid);
-        return resizeBy.joson({
+        return res.json({
             ok: true,
             msg: updatedUser
         });
